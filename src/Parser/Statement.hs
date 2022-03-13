@@ -10,12 +10,12 @@ import Parser.Expr
 import Parser.Type
 
 statement :: Parser Statement
-statement = printStmt <|> var <|> parseReturnStmt <|> parseIfElse <|> parseIfStmt <|> parseWhileStmt
+statement = printStmt <|> var <|> returnStmt <|> parseIfElse <|> ifStmt <|> whileStmt
 
 printStmt :: Parser Statement 
 printStmt = do
     reserved "print"
-    expr <- expr
+    expr <- parens expr
     return $ Print expr
 
 var :: Parser Statement 
@@ -25,35 +25,35 @@ var = do
     expr <- expr
     return $ Var name type' expr
 
-parseReturnStmt :: Parser Statement
-parseReturnStmt = do
-  string tokenReturn
+returnStmt :: Parser Statement
+returnStmt = do
+  reserved tokenReturn
   expr <- expr
   optional $ reserved tokenSemiColon
   return $ Return expr
 
-parseIfStmt :: Parser Statement
-parseIfStmt = do
+ifStmt :: Parser Statement
+ifStmt = do
   reserved "if"
-  cond <- expr
-  reserved "then"
-  then_ <- many statement
+  cond <- parens expr
+  then_ <- stmtBlock
   return $ If cond then_
 
 parseIfElse :: Parser Statement
 parseIfElse = do
   reserved "if"
-  cond <- expr
-  reserved "then"
-  then_ <- many statement
+  cond <- parens expr
+  then_ <- stmtBlock
   reserved "else"
-  else_ <- many statement
+  else_ <- stmtBlock
   return $ IfElse cond then_ else_
 
-parseWhileStmt :: Parser Statement
-parseWhileStmt = do
+whileStmt :: Parser Statement
+whileStmt = do
   reserved "while"
-  cond <- expr
-  reserved "do"
-  body <- many statement
+  cond <- parens expr
+  body <- stmtBlock
   return $ While cond body
+
+stmtBlock :: Parser [Statement]
+stmtBlock = braces $ many statement

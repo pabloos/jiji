@@ -100,10 +100,10 @@ number = do
 
 -- cuantitatives
 noneOf :: String -> Parser Char
-noneOf s = satisfy (\c -> not $ elem c s)
+noneOf s = satisfy (`notElem` s)
 
-oneOf :: [Char] -> Parser Char
-oneOf s = satisfy (flip elem s)
+oneOf :: String -> Parser Char
+oneOf s = satisfy (`elem` s)
 
 many1 :: Parser a -> Parser [a]
 many1 p = do {a <- p; as <- many p; return (a:as)}
@@ -136,8 +136,11 @@ between open close p = do
 parens :: Parser a -> Parser a
 parens = between (reserved "(") (reserved ")")
 
+braces :: Parser a -> Parser a
+braces = between (reserved "{") (reserved "}")
+
+quotations :: Parser a -> Parser a
+quotations = between (char '"') (char '"')
+
 infixOp :: String -> (a -> a -> a) -> Parser (a -> a -> a)
 infixOp x f = reserved x >> return f
-
-int :: Parser Int
-int = read <$> many1 digit

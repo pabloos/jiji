@@ -1,22 +1,24 @@
 
 module Parser.AST where
 
+data Literal = IntVal Int | BoolVal Bool | StringVal String
+    deriving (Eq, Show)
+
 data TypeValue = IntType | BoolType | StringType
             deriving (Eq, Show)
+
 data Expr = Add Expr Expr
           | Mul Expr Expr
           | Sub Expr Expr
           | Negate Expr
-          | IntLit Int
-          | BoolLit Bool
-          | StringLit String
+          | Lit Literal
           | SymbolRef String
           | Call String [Expr]
+          | Not Expr
           | And Expr Expr
           | Or Expr Expr
-          | Not Expr
           | Eq Expr Expr
-          | Neq Expr Expr
+          | Ne Expr Expr
           | Lt Expr Expr
           | Gt Expr Expr
           | Le Expr Expr
@@ -31,11 +33,10 @@ data Statement = If Expr [Statement]
                | Return Expr
                deriving (Show, Eq)
 
-data Definition = Constant String Expr
-                | Function String [Expr] TypeValue [Statement]
-                | Procedure String [Expr] [Statement]
+data Definition = Constant String Literal
+                | Subprogram String [Param] (Maybe TypeValue) [Statement]
                 deriving (Show, Eq)
 
-data Main = Main [Statement] deriving (Show, Eq)
+type Param = (String, TypeValue)
 
-data Program = Program [Definition] Main deriving (Show, Eq)
+type AST = [Definition]

@@ -3,12 +3,13 @@ module Parser.Expr where
 import Control.Applicative
 import Parser.Combinators
 import Parser.AST
+import Parser.Literal
 
 expr :: Parser Expr
 expr = equality
 
 equality :: Parser Expr
-equality = chainl1 comparison (infixOp "==" Eq <|> infixOp "!=" Neq)
+equality = chainl1 comparison (infixOp "==" Eq <|> infixOp "!=" Ne)
 
 comparison :: Parser Expr
 comparison = chainl1 term (infixOp "<" Lt <|> infixOp ">" Gt <|> infixOp "<=" Le <|> infixOp ">=" Ge)
@@ -20,22 +21,22 @@ factor :: Parser Expr
 factor = chainl1 unary (infixOp "*" Mul)
 
 unary :: Parser Expr
-unary = Negate <$> (char '-' *> primary) <|> primary
+unary = Negate <$> (char '-' *> primary) <|> notExpr <|> primary
 
 primary :: Parser Expr
 primary = parseCallExpr <|> parens expr <|> intExpr <|> bool <|> stringExpr <|> parseIdentExpr
 
 bool :: Parser Expr
-bool = BoolLit <$> (True <$ reserved "true" <|> False <$ reserved "false")
+bool = Lit . BoolVal <$> boolLiteral
+
+notExpr :: Parser Expr
+notExpr = Not <$> (reserved "!" *> optional spaces *> expr)
 
 intExpr :: Parser Expr
-intExpr = IntLit <$> int
+intExpr = Lit . IntVal <$> intLiteral
 
 stringExpr :: Parser Expr
-stringExpr = StringLit <$> stringLit
-
-stringLit :: Parser String
-stringLit = char '"' *> many (noneOf "\"") <* char '"'
+stringExpr = Lit . StringVal <$> stringLiteral
 
 args :: Parser [Expr]
 args = parens $ sepBy expr (reserved ",")

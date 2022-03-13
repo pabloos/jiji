@@ -10,16 +10,6 @@ import Parser.Expr
 import Parser.Statement
 import Parser.Definition
 
-program :: Parser Program
-program = Program <$> many definition <*> main
-
-main :: Parser Main
-main = do
-    reserved "fun"
-    reserved "main"
-    reserved "("
-    reserved ")"
-    reserved "{"
-    statements <- many statement
-    reserved "}"
-    return $ Main statements
+program :: Parser AST
+program = do -- Program <$> many definition <*> main
+    many1 definition
