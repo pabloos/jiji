@@ -7,9 +7,10 @@ import Parser.Combinators
 import Parser.Tokens
 import Parser.AST
 import Parser.Expr
+import Parser.Type
 
 statement :: Parser Statement
-statement = printStmt <|> parseLetStmt <|> parseReturnStmt <|> parseIfElse <|> parseIfStmt <|> parseWhileStmt <|> parseAssignStmt
+statement = printStmt <|> var <|> parseReturnStmt <|> parseIfElse <|> parseIfStmt <|> parseWhileStmt
 
 printStmt :: Parser Statement 
 printStmt = do
@@ -17,13 +18,12 @@ printStmt = do
     expr <- expr
     return $ Print expr
 
-parseLetStmt :: Parser Statement
-parseLetStmt = do
-  ident <- ident
-  reserved tokenAssign
-  expr <- expr
-  optional $ string tokenReturn
-  return $ Assign ident expr
+var :: Parser Statement 
+var = do 
+    type' <- typeValue
+    name <- symbol
+    expr <- expr
+    return $ Var name type' expr
 
 parseReturnStmt :: Parser Statement
 parseReturnStmt = do
@@ -57,11 +57,3 @@ parseWhileStmt = do
   reserved "do"
   body <- many statement
   return $ While cond body
-
-parseAssignStmt :: Parser Statement
-parseAssignStmt = do
-  ident <- ident
-  reserved tokenAssign
-  expr <- expr
-  optional $ reserved tokenSemiColon
-  return $ Assign ident expr

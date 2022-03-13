@@ -1,6 +1,8 @@
 
 module Parser.AST where
 
+data TypeValue = IntType | BoolType | StringType
+            deriving (Eq, Show)
 data Expr = Add Expr Expr
           | Mul Expr Expr
           | Sub Expr Expr
@@ -24,18 +26,16 @@ data Expr = Add Expr Expr
 data Statement = If Expr [Statement]
                | IfElse Expr [Statement] [Statement]
                | While Expr [Statement]
-               | Assign String Expr
+               | Var String TypeValue Expr
                | Print Expr
                | Return Expr
-               | Empty
                deriving (Show, Eq)
 
 data Definition = Constant String Expr
-                | Var String Expr
-                | Fun String [Expr] [Statement]
-                | NoDef
+                | Function String [Expr] TypeValue [Statement]
+                | Procedure String [Expr] [Statement]
                 deriving (Show, Eq)
 
-data Main = Main Statement deriving (Show, Eq)
+data Main = Main [Statement] deriving (Show, Eq)
 
 data Program = Program [Definition] Main deriving (Show, Eq)
