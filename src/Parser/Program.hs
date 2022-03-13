@@ -10,11 +10,16 @@ import Parser.Expr
 import Parser.Statement
 import Parser.Definition
 
--- run :: String -> Program
--- run = runParser program
-
 program :: Parser Program
 program = Program <$> many definition <*> main
 
 main :: Parser Main
-main = Main <$> statement
+main = do
+    reserved "fun"
+    reserved "main"
+    reserved "("
+    reserved ")"
+    reserved "{"
+    statements <- many statement
+    reserved "}"
+    return $ Main statements
