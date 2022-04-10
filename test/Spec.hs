@@ -8,7 +8,7 @@ import qualified Parser.StmtSpec as Stmt
 import qualified Parser.DefinitionSpec as Def
 import qualified Parser.ProgramSpec as Program
 
-import qualified Semantic.SymbolTable.Build as Build
+import qualified Semantic.SymbolTable.BuildSpec as Build
 import qualified Semantic.SymbolTableSpec as SymbolTable
 import qualified Semantic.SymbolTable.CheckSpec as Check
 
@@ -24,4 +24,4 @@ main = hspec $ Expr.spec
             >> SymbolTable.spec
             >> Build.spec
             >> Check.spec
-            -- >> MainChecker.spec
+            >> MainChecker.spec

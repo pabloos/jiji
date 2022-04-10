@@ -78,7 +78,7 @@ test-suite leg-test
       Parser.StmtSpec
       Parser.TypeSpec
       Semantic.Analizer.MainCheckerSpec
-      Semantic.SymbolTable.Build
+      Semantic.SymbolTable.BuildSpec
       Semantic.SymbolTable.CheckSpec
       Semantic.SymbolTableSpec
       Paths_leg
