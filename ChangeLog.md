@@ -1,3 +1,3 @@
-# Changelog for leg
+# Changelog for jiji
 
 ## Unreleased changes

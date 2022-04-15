@@ -28,8 +28,10 @@ data Expr = Add Expr Expr
 data Statement = If Expr [Statement]
                | IfElse Expr [Statement] [Statement]
                | While Expr [Statement]
-               | Var String TypeValue Expr
+               | Var String TypeValue Expr -- int a = 1
+               | Assign String Expr        -- a = 1
                | Print Expr
+               | CallStmt String [Expr]
                | Return Expr
                deriving (Show, Eq)
 

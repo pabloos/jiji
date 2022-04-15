@@ -6,14 +6,14 @@ import Control.Monad ( msum )
 
 import Parser.AST
 
-data MainException = NotEmptyParams
-                    | NoMain
-                    | TypedMain
-                    | ReturnInMain
-                    | Unknown String
-                    deriving (Show, Eq)
+data Error = NotEmptyParams
+            | NoMain
+            | TypedMain
+            | ReturnInMain
+            | Unknown String
+            deriving (Show, Eq)
 
-checkMain :: AST -> Maybe MainException
+checkMain :: AST -> Maybe Error
 checkMain ast = case getMain ast of
                 Nothing -> Just NoMain
                 Just main -> do 
@@ -28,16 +28,16 @@ getMain (x:xs) = case x of
   Subprogram "main" _ _ _ -> Just x
   _ -> getMain xs
 
-noParams :: Definition -> Maybe MainException
+noParams :: Definition -> Maybe Error
 noParams (Subprogram "main" [] _ _) = Nothing
 noParams (Subprogram "main" x _ _) = Just NotEmptyParams
 noParams _ = Just $ Unknown "unkown subprogram"
 
-withType :: Definition -> Maybe MainException
+withType :: Definition -> Maybe Error
 withType (Subprogram "main" _ (Just _) _) = Just TypedMain
 withType _ = Nothing
 
-noreturn :: [Statement] -> Maybe MainException
+noreturn :: [Statement] -> Maybe Error
 noreturn [] = Nothing
 noreturn (x:xs) = case x of
   Return _ -> Just ReturnInMain

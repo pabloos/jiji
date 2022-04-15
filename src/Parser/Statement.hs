@@ -10,7 +10,7 @@ import Parser.Expr
 import Parser.Type
 
 statement :: Parser Statement
-statement = printStmt <|> var <|> returnStmt <|> parseIfElse <|> ifStmt <|> whileStmt
+statement = printStmt <|> call <|> varAssign <|> varDeclaration <|> returnStmt <|> parseIfElse <|> ifStmt <|> whileStmt
 
 printStmt :: Parser Statement 
 printStmt = do
@@ -18,12 +18,19 @@ printStmt = do
     expr <- parens expr
     return $ Print expr
 
-var :: Parser Statement 
-var = do 
-    type' <- typeValue
-    name <- symbol
-    expr <- expr
-    return $ Var name type' expr
+varDeclaration :: Parser Statement 
+varDeclaration = do 
+  type' <- typeValue
+  name <- symbol
+  expr <- expr
+  return $ Var name type' expr
+
+varAssign :: Parser Statement
+varAssign = do
+  name <- symbol
+  reserved "="
+  expr <- expr
+  return $ Assign name expr
 
 returnStmt :: Parser Statement
 returnStmt = do
@@ -57,3 +64,9 @@ whileStmt = do
 
 stmtBlock :: Parser [Statement]
 stmtBlock = braces $ many statement
+
+call :: Parser Statement
+call = do
+  ident <- symbol
+  args <- args
+  return $ CallStmt ident args

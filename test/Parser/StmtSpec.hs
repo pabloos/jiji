@@ -34,6 +34,12 @@ spec =
                 let result = runParser whileStmt input
                 result `shouldBe` expected
 
+            it "parses function call" $ do
+                let input = "log(x)"
+                let expected = CallStmt "log" [SymbolRef "x"]
+                let result = runParser call input
+                result `shouldBe` expected
+
         -- print call needs to have an expression
         -- it "parses print statement without expression" $ do
             -- let input = "print()"
